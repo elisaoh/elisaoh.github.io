@@ -17,16 +17,16 @@
   {
     "path": "posts/2019-03-09-ranking-from-comparisons/",
     "title": "Ranking from Comparisons",
-    "description": "A short description of the post.",
+    "description": "A brief write-up on rank aggregation from pairwise comparisons.",
     "author": [
       {
-        "name": "Nora Jones",
-        "url": "https://example.com/norajones"
+        "name": "Elisa Ou",
+        "url": "https://elisaoh.github.io"
       }
     ],
     "date": "2019-03-09",
     "categories": [],
     "preview": {},
-    "last_modified": "2019-03-10T00:26:31-06:00"
+    "last_modified": "2019-03-10T03:11:54-05:00"
   }
 ]

@@ -21,35 +21,38 @@
   <!--radix_placeholder_meta_tags-->
   <title>Ranking from Comparisons</title>
   
-  <meta property="description" itemprop="description" content="A short description of the post."/>
+  <meta property="description" itemprop="description" content="A brief write-up on rank aggregation from pairwise comparisons."/>
   
   
   <!--  https://schema.org/Article -->
   <meta property="article:published" itemprop="datePublished" content="2019-03-09"/>
   <meta property="article:created" itemprop="dateCreated" content="2019-03-09"/>
-  <meta name="article:author" content="Nora Jones"/>
+  <meta name="article:author" content="Elisa Ou"/>
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Ranking from Comparisons"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="A short description of the post."/>
+  <meta property="og:description" content="A brief write-up on rank aggregation from pairwise comparisons."/>
   <meta property="og:locale" content="en_US"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Ranking from Comparisons"/>
-  <meta property="twitter:description" content="A short description of the post."/>
+  <meta property="twitter:description" content="A brief write-up on rank aggregation from pairwise comparisons."/>
   
   <!--/radix_placeholder_meta_tags-->
+  
+  <meta name="citation_reference" content="citation_title=Ranking on graph data;citation_publication_date=2006;citation_publisher=ACM;citation_author=Shivani Agarwal"/>
+  <meta name="citation_reference" content="citation_title=When can we rank well from comparisons of o (n$\backslash$log (n)) non-actively chosen pairs?;citation_publication_date=2016;citation_author=Arun Rajkumar;citation_author=Shivani Agarwal"/>
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Ranking from Comparisons"]},{"type":"character","attributes":{},"value":["A short description of the post.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url"]}},"value":[{"type":"character","attributes":{},"value":["Nora Jones"]},{"type":"character","attributes":{},"value":["https://example.com/norajones"]}]}]},{"type":"character","attributes":{},"value":["03-09-2019"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","bibliography","output"]}},"value":[{"type":"character","attributes":{},"value":["Ranking from Comparisons"]},{"type":"character","attributes":{},"value":["A brief write-up on rank aggregation from pairwise comparisons.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Elisa Ou"]},{"type":"character","attributes":{},"value":["https://elisaoh.github.io"]},{"type":"character","attributes":{},"value":["Department of ECE, UW-Madison"]}]}]},{"type":"character","attributes":{},"value":["03-09-2019"]},{"type":"character","attributes":{},"value":["biblio.bib"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc","toc_depth"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"NULL"}
+  {"type":"character","attributes":{},"value":["biblio.bib","ranking-from-comparisons_files/bowser-1.9.3/bowser.min.js","ranking-from-comparisons_files/distill-2.2.21/template.v2.js","ranking-from-comparisons_files/jquery-1.11.3/jquery.min.js","ranking-from-comparisons_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -942,7 +945,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Ranking from Comparisons","description":"A short description of the post.","authors":[{"author":"Nora Jones","authorURL":"https://example.com/norajones","affiliation":"&nbsp;","affiliationURL":"#"}],"publishedDate":"2019-03-09T00:00:00.000-06:00","citationText":"Jones, 2019"}
+{"title":"Ranking from Comparisons","description":"A brief write-up on rank aggregation from pairwise comparisons.","authors":[{"author":"Elisa Ou","authorURL":"https://elisaoh.github.io","affiliation":"Department of ECE, UW-Madison","affiliationURL":"#"}],"publishedDate":"2019-03-09T00:00:00.000-06:00","citationText":"Ou, 2019"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -953,18 +956,59 @@
 
 <div class="d-title">
 <h1>Ranking from Comparisons</h1>
-<p>A short description of the post.</p>
+<p>A brief write-up on rank aggregation from pairwise comparisons.</p>
 </div>
 
 <div class="d-byline">
-  Nora Jones <a href="https://example.com/norajones" class="uri">https://example.com/norajones</a> 
+  Elisa Ou <a href="https://elisaoh.github.io" class="uri">https://elisaoh.github.io</a> (Department of ECE, UW-Madison)
   
 <br/>03-09-2019
 </div>
 
 <div class="d-article">
+<h3 class="d-toc-header">Table of Contents</h3>
+<nav class="d-toc" id="TOC">
+<ul>
+<li><a href="#problem-setup">Problem Setup</a></li>
+<li><a href="#deterministic-tournament-p">Deterministic tournament <span class="math inline">\(P\)</span></a><ul>
+<li><a href="#ranking-on-graph-data">Ranking on Graph Data</a></li>
+</ul></li>
+<li><a href="#probability-model">Probability model</a><ul>
+<li><a href="#thurstone-model"><em>Thurstone</em> model</a></li>
+<li><a href="#bradley-terry-luceblt-model"><em>Bradley-Terry-Luce</em>(BLT) model</a></li>
+<li><a href="#low-rank-condition"><em>low rank</em> condition</a></li>
+</ul></li>
+<li><a href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</nav>
+<hr class="d-toc-separator"/>
+<p>This post will give a neither detailed nor comprehensive review on the problem of reconstructing ranking from pairwise comparisons.</p>
+<h2 id="problem-setup">Problem Setup</h2>
+<p>Given <span class="math inline">\(n\)</span> items <span class="math inline">\(\{x_1,x_2,\dots,x_n\}\)</span> and an unknown preference matrix <span class="math inline">\(P \in [0,1]^{n\times n}\)</span>. The entry <span class="math inline">\(P_{i,j}\)</span> in <span class="math inline">\(P\)</span> denote the probability item <span class="math inline">\(x_i\)</span> will beat item <span class="math inline">\(x_j\)</span>. <span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span></p>
+<p>To formulate this problem as a reasonable ranking problem, we have these two following constrains on matrix <span class="math inline">\(P\)</span>:</p>
+<ul>
+<li>For each pair of items <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span>, it is rather <span class="math inline">\(x_i\)</span> beats <span class="math inline">\(x_j\)</span> or <span class="math inline">\(x_j\)</span> beats <span class="math inline">\(x_i\)</span>, thus <span class="math inline">\(P_{ij} + P_{ji} =1\)</span>. (We will also consider <span class="math inline">\(x_i\)</span> ties <span class="math inline">\(x_j\)</span> in some special case.)</li>
+<li>Stochastic transitivity(ST) condition: if <span class="math inline">\(P_{ij} &gt; \frac{1}{2}\)</span> and <span class="math inline">\(P_{jk} &gt; \frac{1}{2}\)</span>, then <span class="math inline">\(P_{ik} &gt; \frac{1}{2}\)</span>.</li>
+</ul>
+<h2 id="deterministic-tournament-p">Deterministic tournament <span class="math inline">\(P\)</span></h2>
+<p>First consider a simply case addressed as deterministic tournament in <span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span>. In this setting, <span class="math inline">\(P_{ij} \in \{0,1, \forall i \neq j\)</span>, which is saying that, for a latent ranking function <span class="math inline">\(f(x)\)</span> such that <span class="math inline">\(f(x_i) &gt; f(x_j)\)</span>, <span class="math inline">\(x_i\)</span> will always beat <span class="math inline">\(x_j\)</span> in comparisons. This paper<span class="citation" data-cites="agarwal2006ranking">(Agarwal <a href="#ref-agarwal2006ranking">2006</a>)</span> studies this setting on graph data and proposes an algorithm with a RKHS interpretation.</p>
+<h3 id="ranking-on-graph-data">Ranking on Graph Data</h3>
+<p>Weighted data graph <span class="math inline">\(G=(V,E,w)\)</span>, where <span class="math inline">\(w_{ij}\)</span> on edge <span class="math inline">\(e_{ij}\)</span> represents similarity between <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_n\)</span>. We also</p>
+<h2 id="probability-model">Probability model</h2>
+<h3 id="thurstone-model"><em>Thurstone</em> model</h3>
+<h3 id="bradley-terry-luceblt-model"><em>Bradley-Terry-Luce</em>(BLT) model</h3>
+<h3 id="low-rank-condition"><em>low rank</em> condition</h3>
+<h2 id="acknowledgments" class="appendix">Acknowledgments</h2>
 <p>Distill is a publication format for scientific and technical writing, native to the web.</p>
 <p>Learn more about using Distill at <a href="https://rstudio.github.io/distill" class="uri">https://rstudio.github.io/distill</a>.</p>
+<div id="refs" class="references">
+<div id="ref-agarwal2006ranking">
+<p>Agarwal, Shivani. 2006. “Ranking on Graph Data.” In <em>Proceedings of the 23rd International Conference on Machine Learning</em>, 25–32. ACM. <a href="https://www.shivani-agarwal.net/Publications/2006/icml06-graph-ranking.pdf">https://www.shivani-agarwal.net/Publications/2006/icml06-graph-ranking.pdf</a>.</p>
+</div>
+<div id="ref-rajkumar2016can">
+<p>Rajkumar, Arun, and Shivani Agarwal. 2016. “When Can We Rank Well from Comparisons of O (N<span class="math inline">\(\backslash\)</span>log (N)) Non-Actively Chosen Pairs?” In <em>Conference on Learning Theory</em>, 1376–1401. <a href="http://proceedings.mlr.press/v49/rajkumar16.pdf">http://proceedings.mlr.press/v49/rajkumar16.pdf</a>.</p>
+</div>
+</div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -972,11 +1016,47 @@
 <div class="d-appendix">
 </div>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
 <div class="appendix-bottom"></div>
+<script id="distill-bibliography" type="text/bibtex">
+@inproceedings{agarwal2006ranking,
+  title={Ranking on graph data},
+  author={Agarwal, Shivani},
+  booktitle={Proceedings of the 23rd international conference on Machine learning},
+  pages={25--32},
+  year={2006},
+  organization={ACM},
+  url = {https://www.shivani-agarwal.net/Publications/2006/icml06-graph-ranking.pdf}
+}
+@inproceedings{rajkumar2016can,
+  title={When can we rank well from comparisons of O (n$\backslash$log (n)) non-actively chosen pairs?},
+  author={Rajkumar, Arun and Agarwal, Shivani},
+  booktitle={Conference on Learning Theory},
+  pages={1376--1401},
+  year={2016},
+  url = {http://proceedings.mlr.press/v49/rajkumar16.pdf}
+}
+@inproceedings{agarwal2018accelerated,
+  title={Accelerated spectral ranking},
+  author={Agarwal, Arpit and Patil, Prathamesh and Agarwal, Shivani},
+  booktitle={International Conference on Machine Learning},
+  pages={70--79},
+  year={2018},
+  url={http://proceedings.mlr.press/v80/agarwal18b/agarwal18b.pdf}
+}
+</script>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <!--/radix_placeholder_navigation_after_body-->

@@ -1,19 +1,47 @@
 ---
 title: "Ranking from Comparisons"
 description: |
-  A short description of the post.
+  A brief write-up on rank aggregation from pairwise comparisons.
 author:
-  - name: Nora Jones
-    url: https://example.com/norajones
+  - name: Elisa Ou
+    url: https://elisaoh.github.io
+    affiliation: Department of ECE, UW-Madison
 date: 03-09-2019
+bibliography: biblio.bib
 output:
   distill::distill_article:
     self_contained: false
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+This post will give a neither detailed nor comprehensive review on the problem of reconstructing ranking from pairwise comparisons. 
+
+## Problem Setup
+
+Given $n$ items $\{x_1,x_2,\dots,x_n\}$ and an unknown preference matrix $P \in [0,1]^{n\times n}$. The entry $P_{i,j}$ in $P$ denote the probability item $x_i$ will beat item $x_j$.  [@rajkumar2016can]
+
+To formulate this problem as a reasonable ranking problem, we have these two following constrains on matrix $P$:
+
+* For each pair of items $x_i$ and $x_j$, it is rather $x_i$ beats $x_j$ or $x_j$ beats $x_i$, thus $P_{ij} + P_{ji} =1$. (We will also consider $x_i$ ties $x_j$ in some special case.)
+* Stochastic transitivity(ST) condition: if $P_{ij} > \frac{1}{2}$ and $P_{jk} > \frac{1}{2}$, then $P_{ik} > \frac{1}{2}$.
+
+## Deterministic tournament $P$
+First consider a simply case addressed as deterministic tournament in [@rajkumar2016can]. In this setting, $P_{ij} \in \{0,1, \forall i \neq j$, which is saying that, for a latent ranking function $f(x)$ such that $f(x_i) > f(x_j)$, $x_i$ will always beat $x_j$ in comparisons. This paper[@agarwal2006ranking] studies this setting on graph data and proposes an algorithm with a RKHS interpretation.
+
+### Ranking on Graph Data
+Weighted data graph $G=(V,E,w)$, where $w_{ij}$ on edge $e_{ij}$ represents similarity between $v_1$ and $v_n$. We also 
+
+## Probability model 
+### _Thurstone_ model
+### _Bradley-Terry-Luce_(BLT) model
+### _low rank_ condition
+
+
+## Acknowledgments {.appendix}
 
 Distill is a publication format for scientific and technical writing, native to the web.
 
