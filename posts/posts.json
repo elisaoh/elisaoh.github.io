@@ -13,5 +13,20 @@
     "categories": [],
     "preview": {},
     "last_modified": "2019-03-09T23:30:12-06:00"
+  },
+  {
+    "path": "posts/2019-03-09-ranking-from-comparisons/",
+    "title": "Ranking from Comparisons",
+    "description": "A short description of the post.",
+    "author": [
+      {
+        "name": "Nora Jones",
+        "url": "https://example.com/norajones"
+      }
+    ],
+    "date": "2019-03-09",
+    "categories": [],
+    "preview": {},
+    "last_modified": "2019-03-10T00:26:31-06:00"
   }
 ]
