@@ -29,16 +29,145 @@ To formulate this problem as a reasonable ranking problem, we have these two fol
 * For each pair of items $x_i$ and $x_j$, it is rather $x_i$ beats $x_j$ or $x_j$ beats $x_i$, thus $P_{ij} + P_{ji} =1$. (We will also consider $x_i$ ties $x_j$ in some special case.)
 * Stochastic transitivity(ST) condition: if $P_{ij} > \frac{1}{2}$ and $P_{jk} > \frac{1}{2}$, then $P_{ik} > \frac{1}{2}$.
 
-## Deterministic tournament $P$
+## Deterministic Ordering
 First consider a simply case addressed as deterministic tournament in [@rajkumar2016can]. In this setting, $P_{ij} \in \{0,1, \forall i \neq j$, which is saying that, for a latent ranking function $f(x)$ such that $f(x_i) > f(x_j)$, $x_i$ will always beat $x_j$ in comparisons. This paper[@agarwal2006ranking] studies this setting on graph data and proposes an algorithm with a RKHS interpretation.
 
 ### Ranking on Graph Data
-Weighted data graph $G=(V,E,w)$, where $w_{ij}$ on edge $e_{ij}$ represents similarity between $v_1$ and $v_n$. We also 
+Weighted data graph $G=(V,E,w)$, where $w_{ij}$ on edge $e_{ij}$ represents similarity between $v_1$ and $v_n$. We also have access to an order graph $\Gamma = (V,\Sigma,\tau)$ and $\tau : \Sigma \rightarrow \mathbb{R}^{+}$ is the penalty for misranking $(v_i,v_j) \in \Sigma$, which denotes in this comparison $v_i$ is ranked higher than $v_j$.
 
-## Probability model 
-### _Thurstone_ model
-### _Bradley-Terry-Luce_(BLT) model
+The goal is to learn a ranking/score function for vertices/items in $V$, denoted by $f:V \rightarrow \mathbb{R}$. Let $\mathbf{f} \in \mathbb{R}^n$, where $f_i = f(v_i)$ the ranking for $v_i$.
+
+Empirically define the loss of misranking $(v_i,v_j)$ as $$\ell(f;v_i,v_j) = \begin{cases}
+                        1 \quad \text{if $f(v_i) < f(v_j)$} \\
+                         \frac{1}{2} \quad\text{if $f(v_i) = f(v_j)$} \\
+                         0 \quad \text{if $f(v_i) < f(v_j)$}
+                        \end{cases}$$
+
+<aside>
+This content will appear in the gutter of the article.(a picture of loss function)
+</aside>
+
+So given a function $f$, the empirical error 
+$$\hat{R}(f;\Gamma)= \frac{1}{|\Sigma|}\sum_{(v_i,v_j)\in \Sigma} \tau(v_i,v_j)\cdot\ell(f;v_i,v_j)$$. 
+Plus a regularizer to encourage smoothness of the learned function wrt the data graph $G$.
+
+As the objective above is step-function which is hard to minimize, similar to $(0,1)$-loss and hinge loss,
+we use 
+$$\ell_{h}\left(f ; v_{i}, v_{j}\right)=\left(1-\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)\right)_{+},$$
+and the empirical loss becomes
+$$\hat{R}_{\ell_{h}}(f ; \Gamma)=\frac{1}{|\Sigma|} \sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \tau\left(v_{i}, v_{j}\right) \cdot \ell_{h}\left(f ; v_{i}, v_{j}\right).$$
+Then we need to find a suitable minimizer 
+$$\min _{f : V \rightarrow \mathbb{R}}\left\{\hat{R}_{\ell_{h}}(f ; \Gamma)+\lambda \mathcal{S}(f)\right\}.$$
+
+Degree function of $G$
+$$d\left(v_{i}\right)=\sum_{j :\left\{v_{i}, v_{j}\right\} \in E} w\left(v_{i}, v_{j}\right)$$
+
+_edge derivative_ of a function $f$ along edge ${v_i,v_j} \in E$ at vertex $v_i$ as 
+
+$$\left.\frac{\partial f}{\partial\left\{v_{i}, v_{j}\right\}}\right|_{v_{i}}=\sqrt{\frac{w\left(v_{i}, v_{j}\right)}{d\left(v_{i}\right)}} f\left(v_{i}\right)-\sqrt{\frac{w\left(v_{i}, v_{j}\right)}{d\left(v_{j}\right)}} f\left(v_{j}\right)$$
+
+
+Geometry average _local variation_
+
+$$\left\|\nabla_{v_{i}} f\right\|=\sqrt{\sum_{j :\left\{v_{i}, v_{j}\right\} \in E}\left(\left.\frac{\partial f}{\partial\left\{v_{i}, v_{j}\right\}}\right|_{v_{i}}\right)^{2}}$$
+<aside>
+This is kind of like $L_2$ penalty
+</aside>
+So the smoothness of $f$, 
+$$\mathcal{S}(f)=\frac{1}{2} \sum_{i=1}^{n}\left\|\nabla_{v_{i}} f\right\|^{2}.$$
+Normalized Laplacian matrix
+$$\mathbf{L}=\mathbf{D}^{-1 / 2}(\mathbf{D}-\mathbf{W}) \mathbf{D}^{-1 / 2}$$
+
+and rewrite penalty term as 
+$$\mathcal{S}(f)=\mathbf{f}^{T} \mathbf{L} \mathbf{f}.$$
+
+### support vector machine
+$$\min _{\mathbf{f} \in \mathbb{R}^{n}}\left\{\frac{1}{2} \mathbf{f}^{T} \mathbf{L f}+C \sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \tau\left(v_{i}, v_{j}\right) \cdot \xi_{i j}\right\} $$
+$$\begin{aligned} f_{i}-f_{j} & \geq 1-\xi_{i j} \quad \forall\left(v_{i}, v_{j}\right) \in \Sigma \\ \xi_{i j} & \geq 0 & \forall\left(v_{i}, v_{j}\right) \in \Sigma \end{aligned}$$
+where \(C=1 / 2 \lambda|\Sigma|\).
+
+Common technique for SVM
+$$\min _{\mathbf{f} \in \mathbb{R}^{n}}\left\{\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \Sigma\left(v_{k}, v_{l}\right) \in \Sigma} \alpha_{i j} \alpha_{k l} \phi_{i j k l}-\sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \alpha_{i j}\right\}$$
+subject to
+$$0 \leq \alpha_{i j} \leq C \tau\left(v_{i}, v_{j}\right) \quad \forall\left(v_{i}, v_{j}\right) \in \Sigma$$
+where 
+$$\phi_{i j k l}=L_{i k}^{+}-L_{j k}^{+}-L_{i l}^{+}+L_{j l}^{+}.$$
+And $L^+$ pseudo inverse of $L$.
+Solution
+$$\mathbf{f}_{\langle G, \Gamma\rangle}=\mathbf{L}^{+}\left(\boldsymbol{\alpha}^{+}-\boldsymbol{\alpha}^{-}\right)$$
+where $$\alpha_{i}^{+}=\sum_{j :\left(v_{i}, v_{j}\right) \in \Sigma} \alpha_{i j}, \quad \alpha_{i}^{-}=\sum_{j :\left(v_{j}, v_{i}\right) \in \Sigma} \alpha_{j i}$$
+
+### RKHS View
+
+If consider $\mathcal{F}$ as column space of $L^+$, it is clear tha $\mathcal{F}$ is a RKHS. ($L$ symmetric p.s.d.).
+Then we have \(\mathcal{S}(f)=\|\mathbf{f}\|_{\mathcal{F}}^{2}\), a regularization in a given RKHS.
+
+### Bound by biparte graph
+
+From another work [@agarwal2005stability]
+$$\begin{aligned} R\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle}\right)<& \hat{R}_{\ell_{1}}\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle} ; S_{+}, S_{-}\right) \\ &+\frac{8 \kappa^{2}}{\lambda}\left(\frac{m_{1}+m_{2}}{m_{1} m_{2}}\right) \\ &+\left(1+\frac{16 \kappa^{2}}{\lambda}\right) \sqrt{\frac{\left(m_{1}+m_{2}\right) \ln (1 / \delta)}{2 m_{1} m_{2}}} \end{aligned}$$
+
+
+## Classes of Preference Matrices
+### General Class
+$$\mathcal{P}_{n}=\left\{\mathbf{P} \in[0,1]^{n \times n} | P_{i j}+P_{j i}=1 \forall i, j\right\}$$
+stochastic transitivity (ST)
+$$\mathcal{P}_{n}^{\mathrm{ST}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | i>\mathbf{p} j, j>_{\mathbf{P}} k \Longrightarrow i>_{\mathbf{P}} k\right\}$$
+deterministic ordering (DO) model
+$$\mathcal{P}_{n}^{\mathrm{DO}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n} : \sigma(i)<\sigma(j) \Longrightarrow P_{i j}=1\right\}$$
+Noisy permutation model
+$$\mathcal{P}_{n}^{\mathrm{NP}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n}, p \in\left[0, \frac{1}{2}\right) : \sigma(i)<\sigma(j) \Longrightarrow P_{i j}=1-p\right\}$$
+$$\mathcal{P}_{n}^{\mathrm{DO}} \subseteq \mathcal{P}_{n}^{\mathrm{NP}} \subseteq \mathcal{P}_{n}^{\mathrm{ST}}$$
+### Statistical Models
+$$\begin{aligned} \mathcal{P}_{n}^{\mathrm{BTL}} &=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\} \\ \mathcal{P}_{n}^{\mathrm{Thu}} &=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\} \end{aligned}$$
 ### _low rank_ condition
+
+## Iterative Ranking from Pair-wise Comparisons (Random Walk)
+
+### Introduction
+This algorithm has a natural random walk interpretation and model independent [@negahban2012iterative]
+Use BLT as demonstration, to show the performance is as well as MLE
+The key idea is to construct a random walk, it is likely to go from $v_i$ to $v_j$ if item $i$ and $j$ is compared, and the probability depends on how likely $i$ lost to $j$. 
+
+So the global effect induced by transitivity is captured through the stationary distribution.(Network Centrality) PageRank, 
+Randomly chosen \(O(n\) poly \((\log n))\) pairs, notice that $\Omega(n  \log n )$ is necessary number of random comparison.
+
+<aside>
+due to connectivity threshold of random bipartite graph
+</aside>
+
+### Problem setup
+Consider $n$ items and a weight score $w_i \in \mathbb{R}_+$ for each item. In this setting, a pair of items are compared $k$ times in total, then denote the result by $Y^l_{ij}$ be $1$ if $j$ is prefered and $0$ otherwise $1 \leq l \leq k$.
+The BTL model gives us \(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\). 
+
+### Random walk approach
+
+* $a_{ij}$ the fraction of times $j$ prefered over $i$. \(a_{i j}=(1 / k) \sum_{l=1}^{k} Y_{i j}^{l}\)  
+* A random walk on weighted graph $G=([n],E,A)$.  The weighted edge \(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\), \(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\) 
+
+<aside>
+Notice that here the weight is not the cost, but the probability of going from one vertex to another...
+</aside>
+
+A random walk \(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\).  By definition, the entries of a valid transition matrix are non-negative and $\sum_j P_{ij} =1$. Scale all edge weights by $1/d_{max}$, maximum out-degree. Add self-loop
+
+$$P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} & \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} & \text { if } i=j \end{aligned}\right.$$
+__Asymptotically__ (to say $k \rightarrow \infty$ ) $P$ would define a reversible Markov chain. \(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\) is a _unique_ stationary distribution. 
+Also in the ideal setting, $P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)$ is a _valid_ stationary distribution.
+
+### Error Bound
+Each pair is chosen with probability $d/n$. Then there exists positive universal constatns $C,C',C''$ such that when $d\geq C(log n)^2$, and $k d \geq C b^5 log n $, the following bound on the error rate hold with probability at least $1-C''/n^3$:
+$$\frac{\|\pi-\tilde{\pi}\|}{\|\tilde{\pi}\|} \leq C^{\prime} b^{3} \sqrt{\frac{\log n}{k d}},$$ 
+where \(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\) and \(b \equiv \max _{i, j} w_{i} / w_{j}\).
+
+<aside>
+Remarks: ...
+</aside>
+
+### Mixing time
+However, the mixing time is quite long due to the self-loop. [@agarwal2018accelerated]
+
+## Low rank completion
 
 
 ## Acknowledgments {.appendix}

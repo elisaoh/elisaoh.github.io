@@ -45,6 +45,8 @@
   
   <meta name="citation_reference" content="citation_title=Ranking on graph data;citation_publication_date=2006;citation_publisher=ACM;citation_author=Shivani Agarwal"/>
   <meta name="citation_reference" content="citation_title=When can we rank well from comparisons of o (n$\backslash$log (n)) non-actively chosen pairs?;citation_publication_date=2016;citation_author=Arun Rajkumar;citation_author=Shivani Agarwal"/>
+  <meta name="citation_reference" content="citation_title=Accelerated spectral ranking;citation_publication_date=2018;citation_author=Arpit Agarwal;citation_author=Prathamesh Patil;citation_author=Shivani Agarwal"/>
+  <meta name="citation_reference" content="citation_title=Stability and generalization of bipartite ranking algorithms;citation_publication_date=2005;citation_publisher=Springer;citation_author=Shivani Agarwal;citation_author=Partha Niyogi"/>
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
@@ -1320,14 +1322,23 @@ document.addEventListener('DOMContentLoaded', function() {
 <nav class="d-toc" id="TOC">
 <ul>
 <li><a href="#problem-setup">Problem Setup</a></li>
-<li><a href="#deterministic-tournament-p">Deterministic tournament <span class="math inline">\(P\)</span></a><ul>
+<li><a href="#deterministic-ordering">Deterministic Ordering</a><ul>
 <li><a href="#ranking-on-graph-data">Ranking on Graph Data</a></li>
+<li><a href="#support-vector-machine">support vector machine</a></li>
+<li><a href="#rkhs-view">RKHS View</a></li>
+<li><a href="#bound-by-biparte-graph">Bound by biparte graph</a></li>
 </ul></li>
-<li><a href="#probability-model">Probability model</a><ul>
-<li><a href="#thurstone-model"><em>Thurstone</em> model</a></li>
-<li><a href="#bradley-terry-luceblt-model"><em>Bradley-Terry-Luce</em>(BLT) model</a></li>
-<li><a href="#low-rank-condition"><em>low rank</em> condition</a></li>
+<li><a href="#classes-of-preference-matrices">Classes of Preference Matrices</a><ul>
+<li><a href="#general-class">General Class</a></li>
 </ul></li>
+<li><a href="#iterative-ranking-from-pair-wise-comparisons-random-walk">Iterative Ranking from Pair-wise Comparisons (Random Walk)</a><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#problem-setup-1">Problem setup</a></li>
+<li><a href="#random-walk-approach">Random walk approach</a></li>
+<li><a href="#error-bound">Error Bound</a></li>
+<li><a href="#mixing-time">Mixing time</a></li>
+</ul></li>
+<li><a href="#low-rank-completion">Low rank completion</a></li>
 <li><a href="#acknowledgments">Acknowledgments</a></li>
 </ul>
 </nav>
@@ -1340,20 +1351,84 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>For each pair of items <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span>, it is rather <span class="math inline">\(x_i\)</span> beats <span class="math inline">\(x_j\)</span> or <span class="math inline">\(x_j\)</span> beats <span class="math inline">\(x_i\)</span>, thus <span class="math inline">\(P_{ij} + P_{ji} =1\)</span>. (We will also consider <span class="math inline">\(x_i\)</span> ties <span class="math inline">\(x_j\)</span> in some special case.)</li>
 <li>Stochastic transitivity(ST) condition: if <span class="math inline">\(P_{ij} &gt; \frac{1}{2}\)</span> and <span class="math inline">\(P_{jk} &gt; \frac{1}{2}\)</span>, then <span class="math inline">\(P_{ik} &gt; \frac{1}{2}\)</span>.</li>
 </ul>
-<h2 id="deterministic-tournament-p">Deterministic tournament <span class="math inline">\(P\)</span></h2>
+<h2 id="deterministic-ordering">Deterministic Ordering</h2>
 <p>First consider a simply case addressed as deterministic tournament in <span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span>. In this setting, <span class="math inline">\(P_{ij} \in \{0,1, \forall i \neq j\)</span>, which is saying that, for a latent ranking function <span class="math inline">\(f(x)\)</span> such that <span class="math inline">\(f(x_i) &gt; f(x_j)\)</span>, <span class="math inline">\(x_i\)</span> will always beat <span class="math inline">\(x_j\)</span> in comparisons. This paper<span class="citation" data-cites="agarwal2006ranking">(Agarwal <a href="#ref-agarwal2006ranking">2006</a>)</span> studies this setting on graph data and proposes an algorithm with a RKHS interpretation.</p>
 <h3 id="ranking-on-graph-data">Ranking on Graph Data</h3>
-<p>Weighted data graph <span class="math inline">\(G=(V,E,w)\)</span>, where <span class="math inline">\(w_{ij}\)</span> on edge <span class="math inline">\(e_{ij}\)</span> represents similarity between <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_n\)</span>. We also</p>
-<h2 id="probability-model">Probability model</h2>
-<h3 id="thurstone-model"><em>Thurstone</em> model</h3>
-<h3 id="bradley-terry-luceblt-model"><em>Bradley-Terry-Luce</em>(BLT) model</h3>
-<h3 id="low-rank-condition"><em>low rank</em> condition</h3>
+<p>Weighted data graph <span class="math inline">\(G=(V,E,w)\)</span>, where <span class="math inline">\(w_{ij}\)</span> on edge <span class="math inline">\(e_{ij}\)</span> represents similarity between <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_n\)</span>. We also have access to an order graph <span class="math inline">\(\Gamma = (V,\Sigma,\tau)\)</span> and <span class="math inline">\(\tau : \Sigma \rightarrow \mathbb{R}^{+}\)</span> is the penalty for misranking <span class="math inline">\((v_i,v_j) \in \Sigma\)</span>, which denotes in this comparison <span class="math inline">\(v_i\)</span> is ranked higher than <span class="math inline">\(v_j\)</span>.</p>
+<p>The goal is to learn a ranking/score function for vertices/items in <span class="math inline">\(V\)</span>, denoted by <span class="math inline">\(f:V \rightarrow \mathbb{R}\)</span>. Let <span class="math inline">\(\mathbf{f} \in \mathbb{R}^n\)</span>, where <span class="math inline">\(f_i = f(v_i)\)</span> the ranking for <span class="math inline">\(v_i\)</span>.</p>
+<p>Empirically define the loss of misranking <span class="math inline">\((v_i,v_j)\)</span> as <span class="math display">\[\ell(f;v_i,v_j) = \begin{cases}
+                        1 \quad \text{if $f(v_i) &lt; f(v_j)$} \\
+                         \frac{1}{2} \quad\text{if $f(v_i) = f(v_j)$} \\
+                         0 \quad \text{if $f(v_i) &lt; f(v_j)$}
+                        \end{cases}\]</span></p>
+<aside>
+This content will appear in the gutter of the article.(a picture of loss function)
+</aside>
+<p>So given a function <span class="math inline">\(f\)</span>, the empirical error <span class="math display">\[\hat{R}(f;\Gamma)= \frac{1}{|\Sigma|}\sum_{(v_i,v_j)\in \Sigma} \tau(v_i,v_j)\cdot\ell(f;v_i,v_j)\]</span>. Plus a regularizer to encourage smoothness of the learned function wrt the data graph <span class="math inline">\(G\)</span>.</p>
+<p>As the objective above is step-function which is hard to minimize, similar to <span class="math inline">\((0,1)\)</span>-loss and hinge loss, we use <span class="math display">\[\ell_{h}\left(f ; v_{i}, v_{j}\right)=\left(1-\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)\right)_{+},\]</span> and the empirical loss becomes <span class="math display">\[\hat{R}_{\ell_{h}}(f ; \Gamma)=\frac{1}{|\Sigma|} \sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \tau\left(v_{i}, v_{j}\right) \cdot \ell_{h}\left(f ; v_{i}, v_{j}\right).\]</span> Then we need to find a suitable minimizer <span class="math display">\[\min _{f : V \rightarrow \mathbb{R}}\left\{\hat{R}_{\ell_{h}}(f ; \Gamma)+\lambda \mathcal{S}(f)\right\}.\]</span></p>
+<p>Degree function of <span class="math inline">\(G\)</span> <span class="math display">\[d\left(v_{i}\right)=\sum_{j :\left\{v_{i}, v_{j}\right\} \in E} w\left(v_{i}, v_{j}\right)\]</span></p>
+<p><em>edge derivative</em> of a function <span class="math inline">\(f\)</span> along edge <span class="math inline">\({v_i,v_j} \in E\)</span> at vertex <span class="math inline">\(v_i\)</span> as</p>
+<p><span class="math display">\[\left.\frac{\partial f}{\partial\left\{v_{i}, v_{j}\right\}}\right|_{v_{i}}=\sqrt{\frac{w\left(v_{i}, v_{j}\right)}{d\left(v_{i}\right)}} f\left(v_{i}\right)-\sqrt{\frac{w\left(v_{i}, v_{j}\right)}{d\left(v_{j}\right)}} f\left(v_{j}\right)\]</span></p>
+<p>Geometry average <em>local variation</em></p>
+<span class="math display">\[\left\|\nabla_{v_{i}} f\right\|=\sqrt{\sum_{j :\left\{v_{i}, v_{j}\right\} \in E}\left(\left.\frac{\partial f}{\partial\left\{v_{i}, v_{j}\right\}}\right|_{v_{i}}\right)^{2}}\]</span>
+<aside>
+This is kind of like <span class="math inline">\(L_2\)</span> penalty
+</aside>
+<p>So the smoothness of <span class="math inline">\(f\)</span>, <span class="math display">\[\mathcal{S}(f)=\frac{1}{2} \sum_{i=1}^{n}\left\|\nabla_{v_{i}} f\right\|^{2}.\]</span> Normalized Laplacian matrix <span class="math display">\[\mathbf{L}=\mathbf{D}^{-1 / 2}(\mathbf{D}-\mathbf{W}) \mathbf{D}^{-1 / 2}\]</span></p>
+<p>and rewrite penalty term as <span class="math display">\[\mathcal{S}(f)=\mathbf{f}^{T} \mathbf{L} \mathbf{f}.\]</span></p>
+<h3 id="support-vector-machine">support vector machine</h3>
+<p><span class="math display">\[\min _{\mathbf{f} \in \mathbb{R}^{n}}\left\{\frac{1}{2} \mathbf{f}^{T} \mathbf{L f}+C \sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \tau\left(v_{i}, v_{j}\right) \cdot \xi_{i j}\right\} \]</span> <span class="math display">\[\begin{aligned} f_{i}-f_{j} &amp; \geq 1-\xi_{i j} \quad \forall\left(v_{i}, v_{j}\right) \in \Sigma \\ \xi_{i j} &amp; \geq 0 &amp; \forall\left(v_{i}, v_{j}\right) \in \Sigma \end{aligned}\]</span> where <span class="math inline">\(C=1 / 2 \lambda|\Sigma|\)</span>.</p>
+<p>Common technique for SVM <span class="math display">\[\min _{\mathbf{f} \in \mathbb{R}^{n}}\left\{\frac{1}{2} \sum_{\left(v_{i}, v_{j}\right) \in \Sigma\left(v_{k}, v_{l}\right) \in \Sigma} \alpha_{i j} \alpha_{k l} \phi_{i j k l}-\sum_{\left(v_{i}, v_{j}\right) \in \Sigma} \alpha_{i j}\right\}\]</span> subject to <span class="math display">\[0 \leq \alpha_{i j} \leq C \tau\left(v_{i}, v_{j}\right) \quad \forall\left(v_{i}, v_{j}\right) \in \Sigma\]</span> where <span class="math display">\[\phi_{i j k l}=L_{i k}^{+}-L_{j k}^{+}-L_{i l}^{+}+L_{j l}^{+}.\]</span> And <span class="math inline">\(L^+\)</span> pseudo inverse of <span class="math inline">\(L\)</span>. Solution <span class="math display">\[\mathbf{f}_{\langle G, \Gamma\rangle}=\mathbf{L}^{+}\left(\boldsymbol{\alpha}^{+}-\boldsymbol{\alpha}^{-}\right)\]</span> where <span class="math display">\[\alpha_{i}^{+}=\sum_{j :\left(v_{i}, v_{j}\right) \in \Sigma} \alpha_{i j}, \quad \alpha_{i}^{-}=\sum_{j :\left(v_{j}, v_{i}\right) \in \Sigma} \alpha_{j i}\]</span></p>
+<h3 id="rkhs-view">RKHS View</h3>
+<p>If consider <span class="math inline">\(\mathcal{F}\)</span> as column space of <span class="math inline">\(L^+\)</span>, it is clear tha <span class="math inline">\(\mathcal{F}\)</span> is a RKHS. (<span class="math inline">\(L\)</span> symmetric p.s.d.). Then we have <span class="math inline">\(\mathcal{S}(f)=\|\mathbf{f}\|_{\mathcal{F}}^{2}\)</span>, a regularization in a given RKHS.</p>
+<h3 id="bound-by-biparte-graph">Bound by biparte graph</h3>
+<p>From another work <span class="citation" data-cites="agarwal2005stability">(Agarwal and Niyogi <a href="#ref-agarwal2005stability">2005</a>)</span> <span class="math display">\[\begin{aligned} R\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle}\right)&lt;&amp; \hat{R}_{\ell_{1}}\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle} ; S_{+}, S_{-}\right) \\ &amp;+\frac{8 \kappa^{2}}{\lambda}\left(\frac{m_{1}+m_{2}}{m_{1} m_{2}}\right) \\ &amp;+\left(1+\frac{16 \kappa^{2}}{\lambda}\right) \sqrt{\frac{\left(m_{1}+m_{2}\right) \ln (1 / \delta)}{2 m_{1} m_{2}}} \end{aligned}\]</span></p>
+<h2 id="classes-of-preference-matrices">Classes of Preference Matrices</h2>
+<h3 id="general-class">General Class</h3>
+<p><span class="math display">\[\mathcal{P}_{n}=\left\{\mathbf{P} \in[0,1]^{n \times n} | P_{i j}+P_{j i}=1 \forall i, j\right\}\]</span> stochastic transitivity (ST) <span class="math display">\[\mathcal{P}_{n}^{\mathrm{ST}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | i&gt;\mathbf{p} j, j&gt;_{\mathbf{P}} k \Longrightarrow i&gt;_{\mathbf{P}} k\right\}\]</span> deterministic ordering (DO) model <span class="math display">\[\mathcal{P}_{n}^{\mathrm{DO}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n} : \sigma(i)&lt;\sigma(j) \Longrightarrow P_{i j}=1\right\}\]</span> Noisy permutation model <span class="math display">\[\mathcal{P}_{n}^{\mathrm{NP}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n}, p \in\left[0, \frac{1}{2}\right) : \sigma(i)&lt;\sigma(j) \Longrightarrow P_{i j}=1-p\right\}\]</span> <span class="math display">\[\mathcal{P}_{n}^{\mathrm{DO}} \subseteq \mathcal{P}_{n}^{\mathrm{NP}} \subseteq \mathcal{P}_{n}^{\mathrm{ST}}\]</span> ### Statistical Models <span class="math display">\[\begin{aligned} \mathcal{P}_{n}^{\mathrm{BTL}} &amp;=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\} \\ \mathcal{P}_{n}^{\mathrm{Thu}} &amp;=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\} \end{aligned}\]</span> ### <em>low rank</em> condition</p>
+<h2 id="iterative-ranking-from-pair-wise-comparisons-random-walk">Iterative Ranking from Pair-wise Comparisons (Random Walk)</h2>
+<h3 id="introduction">Introduction</h3>
+<p>This algorithm has a natural random walk interpretation and model independent <span class="citation" data-cites="negahban2012iterative">(Negahban, Oh, and Shah <a href="#ref-negahban2012iterative">2012</a>)</span> Use BLT as demonstration, to show the performance is as well as MLE The key idea is to construct a random walk, it is likely to go from <span class="math inline">\(v_i\)</span> to <span class="math inline">\(v_j\)</span> if item <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is compared, and the probability depends on how likely <span class="math inline">\(i\)</span> lost to <span class="math inline">\(j\)</span>.</p>
+<p>So the global effect induced by transitivity is captured through the stationary distribution.(Network Centrality) PageRank, Randomly chosen <span class="math inline">\(O(n\)</span> poly <span class="math inline">\((\log n))\)</span> pairs, notice that <span class="math inline">\(\Omega(n \log n )\)</span> is necessary number of random comparison.</p>
+<aside>
+due to connectivity threshold of random bipartite graph
+</aside>
+<h3 id="problem-setup-1">Problem setup</h3>
+<p>Consider <span class="math inline">\(n\)</span> items and a weight score <span class="math inline">\(w_i \in \mathbb{R}_+\)</span> for each item. In this setting, a pair of items are compared <span class="math inline">\(k\)</span> times in total, then denote the result by <span class="math inline">\(Y^l_{ij}\)</span> be <span class="math inline">\(1\)</span> if <span class="math inline">\(j\)</span> is prefered and <span class="math inline">\(0\)</span> otherwise <span class="math inline">\(1 \leq l \leq k\)</span>. The BTL model gives us <span class="math inline">\(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\)</span>.</p>
+<h3 id="random-walk-approach">Random walk approach</h3>
+<ul>
+<li><span class="math inline">\(a_{ij}\)</span> the fraction of times <span class="math inline">\(j\)</span> prefered over <span class="math inline">\(i\)</span>. <span class="math inline">\(a_{i j}=(1 / k) \sum_{l=1}^{k} Y_{i j}^{l}\)</span><br />
+</li>
+<li>A random walk on weighted graph <span class="math inline">\(G=([n],E,A)\)</span>. The weighted edge <span class="math inline">\(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\)</span>, <span class="math inline">\(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\)</span></li>
+</ul>
+<aside>
+Notice that here the weight is not the cost, but the probability of going from one vertex to another…
+</aside>
+<p>A random walk <span class="math inline">\(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\)</span>. By definition, the entries of a valid transition matrix are non-negative and <span class="math inline">\(\sum_j P_{ij} =1\)</span>. Scale all edge weights by <span class="math inline">\(1/d_{max}\)</span>, maximum out-degree. Add self-loop</p>
+<p><span class="math display">\[P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} &amp; \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} &amp; \text { if } i=j \end{aligned}\right.\]</span> <strong>Asymptotically</strong> (to say <span class="math inline">\(k \rightarrow \infty\)</span> ) <span class="math inline">\(P\)</span> would define a reversible Markov chain. <span class="math inline">\(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\)</span> is a <em>unique</em> stationary distribution. Also in the ideal setting, <span class="math inline">\(P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)\)</span> is a <em>valid</em> stationary distribution.</p>
+<h3 id="error-bound">Error Bound</h3>
+<p>Each pair is chosen with probability <span class="math inline">\(d/n\)</span>. Then there exists positive universal constatns <span class="math inline">\(C,C&#39;,C&#39;&#39;\)</span> such that when <span class="math inline">\(d\geq C(log n)^2\)</span>, and $k d C b^5 log n $, the following bound on the error rate hold with probability at least <span class="math inline">\(1-C&#39;&#39;/n^3\)</span>: <span class="math display">\[\frac{\|\pi-\tilde{\pi}\|}{\|\tilde{\pi}\|} \leq C^{\prime} b^{3} \sqrt{\frac{\log n}{k d}},\]</span> where <span class="math inline">\(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\)</span> and <span class="math inline">\(b \equiv \max _{i, j} w_{i} / w_{j}\)</span>.</p>
+<aside>
+Remarks: …
+</aside>
+<h3 id="mixing-time">Mixing time</h3>
+<p>However, the mixing time is quite long due to the self-loop. <span class="citation" data-cites="agarwal2018accelerated">(Agarwal, Patil, and Agarwal <a href="#ref-agarwal2018accelerated">2018</a>)</span></p>
+<h2 id="low-rank-completion">Low rank completion</h2>
 <h2 id="acknowledgments" class="appendix">Acknowledgments</h2>
 <p>Distill is a publication format for scientific and technical writing, native to the web.</p>
 <p>Learn more about using Distill at <a href="https://rstudio.github.io/distill" class="uri">https://rstudio.github.io/distill</a>.</p>
 <div id="refs" class="references">
+<div id="ref-agarwal2018accelerated">
+<p>Agarwal, Arpit, Prathamesh Patil, and Shivani Agarwal. 2018. “Accelerated Spectral Ranking.” In <em>International Conference on Machine Learning</em>, 70–79. <a href="http://proceedings.mlr.press/v80/agarwal18b/agarwal18b.pdf">http://proceedings.mlr.press/v80/agarwal18b/agarwal18b.pdf</a>.</p>
+</div>
 <div id="ref-agarwal2006ranking">
 <p>Agarwal, Shivani. 2006. “Ranking on Graph Data.” In <em>Proceedings of the 23rd International Conference on Machine Learning</em>, 25–32. ACM. <a href="https://www.shivani-agarwal.net/Publications/2006/icml06-graph-ranking.pdf">https://www.shivani-agarwal.net/Publications/2006/icml06-graph-ranking.pdf</a>.</p>
+</div>
+<div id="ref-agarwal2005stability">
+<p>Agarwal, Shivani, and Partha Niyogi. 2005. “Stability and Generalization of Bipartite Ranking Algorithms.” In <em>International Conference on Computational Learning Theory</em>, 32–47. Springer. <a href="https://people.cs.uchicago.edu/~niyogi/papersps/AgaNiycolt.pdf">https://people.cs.uchicago.edu/~niyogi/papersps/AgaNiycolt.pdf</a>.</p>
+</div>
+<div id="ref-negahban2012iterative">
+<p>Negahban, Sahand, Sewoong Oh, and Devavrat Shah. 2012. “Iterative Ranking from Pair-Wise Comparisons.” In <em>Advances in Neural Information Processing Systems</em>, 2474–82. <a href="https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf">https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf</a>.</p>
 </div>
 <div id="ref-rajkumar2016can">
 <p>Rajkumar, Arun, and Shivani Agarwal. 2016. “When Can We Rank Well from Comparisons of O (N<span class="math inline">\(\backslash\)</span>log (N)) Non-Actively Chosen Pairs?” In <em>Conference on Learning Theory</em>, 1376–1401. <a href="http://proceedings.mlr.press/v49/rajkumar16.pdf">http://proceedings.mlr.press/v49/rajkumar16.pdf</a>.</p>
@@ -1405,6 +1480,23 @@ document.addEventListener('DOMContentLoaded', function() {
   pages={70--79},
   year={2018},
   url={http://proceedings.mlr.press/v80/agarwal18b/agarwal18b.pdf}
+}
+@inproceedings{agarwal2005stability,
+  title={Stability and generalization of bipartite ranking algorithms},
+  author={Agarwal, Shivani and Niyogi, Partha},
+  booktitle={International Conference on Computational Learning Theory},
+  pages={32--47},
+  year={2005},
+  organization={Springer},
+  url={https://people.cs.uchicago.edu/~niyogi/papersps/AgaNiycolt.pdf}
+}
+@inproceedings{negahban2012iterative,
+  title={Iterative ranking from pair-wise comparisons},
+  author={Negahban, Sahand and Oh, Sewoong and Shah, Devavrat},
+  booktitle={Advances in neural information processing systems},
+  pages={2474--2482},
+  year={2012},
+  url={https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf}
 }
 </script>
 <!--/radix_placeholder_appendices-->
