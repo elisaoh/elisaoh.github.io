@@ -27,6 +27,10 @@ The problem is called __rank aggregation__, which consider this situation that g
 The problem could be formulated as the following: 
 given $n$ items $\{1,2,\dots,n \}$ to be compared and assume there is a latent preference matrix $P \in [0,1]^{n\times n}$. The entry $P_{i,j}$ in $P$ denote the probability item $x_i$ will beat item $x_j$. The probability could be $0$ or $1$ for deterministic/noiseless case and in $(0,1)$ if the observations are noisy. 
 
+```{r,fig.cap="A matrix"}
+knitr::include_graphics('img/colormatrix.png')
+```
+
 To formulate this problem as a __reasonable__ and __solvable__ ranking problem, we require these two following constrains on matrix $P$:  
 1. For each pair of items $x_i$ and $x_j$, it is rather $x_i$ beats $x_j$ or $x_j$ beats $x_i$, thus $P_{ij} + P_{ji} =1$. (We will also consider $x_i$ ties $x_j$ in some special case.)  
 2. __Stochastic transitivity__(ST) condition (Directed Acyclic Graph): if $P_{ij} > \frac{1}{2}$ and $P_{jk} > \frac{1}{2}$, then $P_{ik} > \frac{1}{2}$. That is saying if there is an item $i$ ranked higher than $j$ and $j$ higher than $k$ with high probability, then $i$ should also beat $j$ with high probability. 
