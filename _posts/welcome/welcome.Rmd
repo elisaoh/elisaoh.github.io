@@ -1,13 +1,11 @@
 ---
 title: "Welcome to My Blog"
 description: |
-  Welcome to our new blog, My Blog. We hope you enjoy 
-  reading what we have to say!
+  Nothing here
 author:
-  - name: Nora Jones 
-    url: https://example.com/norajones
-    affiliation: Spacely Sprockets
-    affiliation_url: https://example.com/spacelysprokets
+  - name: Elisa Ou
+    url: https://elisaoh.github.io
+    affiliation: Department of ECE, UW-Madison
 date: 03-09-2019
 output:
   distill::distill_article:

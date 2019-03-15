@@ -27,7 +27,7 @@ The problem is called __rank aggregation__, which consider this situation that g
 The problem could be formulated as the following: 
 given $n$ items $\{1,2,\dots,n \}$ to be compared and assume there is a latent preference matrix $P \in [0,1]^{n\times n}$. The entry $P_{i,j}$ in $P$ denote the probability item $x_i$ will beat item $x_j$. The probability could be $0$ or $1$ for deterministic/noiseless case and in $(0,1)$ if the observations are noisy. 
 
-```{r,fig.cap="A matrix"}
+```{r fig.cap="A matrix",fig.align="center",fig.width=4, fig.height=4,out.extra="class=external"}
 knitr::include_graphics('img/colormatrix.png')
 ```
 
