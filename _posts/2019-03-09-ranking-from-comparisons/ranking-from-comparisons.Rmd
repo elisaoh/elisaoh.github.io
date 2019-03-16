@@ -69,7 +69,7 @@ we use
 $$\ell_{h}\left(f ; v_{i}, v_{j}\right)=\left(1-\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)\right)_{+},$$  
 
 <aside> 
-```{r,fig.cap="The continuous function upper bounded 0-1 loss."}
+```{r,fig.cap="The continuous function upper bounded 0-1 loss.",preview=TRUE}
 knitr::include_graphics('img/hingeloss.png')
 ```
 </aside> 
@@ -109,9 +109,12 @@ If consider $\mathcal{F}$ as column space of $L^+$, it is easy to see tha $\math
 We could rewrite this term as \(\mathcal{S}(f)=\|\mathbf{f}\|_{\mathcal{F}}^{2}\), which is an $L2$-regularization in a given RKHS.
 
 ### Stability bound for biparte graph 
-This RKHS interpretation could lead to a stability bound for solutions of this optimization 
-$$\begin{aligned} R\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle}\right)<& \hat{R}_{\ell_{1}}\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle} ; S_{+}, S_{-}\right) \\ &+\frac{8 \kappa^{2}}{\lambda}\left(\frac{m_{1}+m_{2}}{m_{1} m_{2}}\right) \\ &+\left(1+\frac{16 \kappa^{2}}{\lambda}\right) \sqrt{\frac{\left(m_{1}+m_{2}\right) \ln (1 / \delta)}{2 m_{1} m_{2}}} \end{aligned}$$
-Formal proof can be found in [@agarwal2005stability].
+This RKHS interpretation could lead to a stability bound for this algorithm with special case. This case considers the order graph $\Gamma$ as a "fully connected" biparte graph with two part $S_+$ and $S_-$, where $\forall v \in S_+$ and $\forall u \in S_-$, there is a directed edge $(v,u)$. Under this special case, the order data is not very different from having binary labels.  
+The formal statement could be found in __Theorem 1__ [@agarwal2006ranking] and the proof can be found in Theorem 3 and 4 from their previous work on biparte graph [@agarwal2005stability].  
+
+<aside>
+By __stability bound__, here we mean the expected error are bounded by empirical error plus some terms for a stable algorithm. More details about this bound could be found in [@bousquet2002stability].
+</aside>
 
 
 ## Classes of Preference Matrices 
@@ -125,13 +128,17 @@ $$\mathcal{P}_{n}^{\mathrm{ST}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | i>\mathb
 Deterministic ordering (DO) model in part 2 have preferences matrices
 $$\mathcal{P}_{n}^{\mathrm{DO}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n} : \sigma(i)<\sigma(j) \Longrightarrow P_{i j}=1\right\}.$$  
 
-### Undeterministic models
+### Undeterministic models 
 __Noisy permutation__ model
 $$\mathcal{P}_{n}^{\mathrm{NP}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n}, p \in\left[0, \frac{1}{2}\right) : \sigma(i)<\sigma(j) \Longrightarrow P_{i j}=1-p\right\}$$
 $$\mathcal{P}_{n}^{\mathrm{DO}} \subseteq \mathcal{P}_{n}^{\mathrm{NP}} \subseteq \mathcal{P}_{n}^{\mathrm{ST}}$$  
-__BTL__ model
-$$\begin{aligned} \mathcal{P}_{n}^{\mathrm{BTL}} &=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\} \\ \mathcal{P}_{n}^{\mathrm{Thu}} &=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\} \end{aligned}$$
-__Thurstone__ model is similar to __BTL__ model
+__Bradley-Terry-Luce__ model  
+For BTL model, there is a scoring/ranking $w_i$ for each item $i$, and 
+$$\mathcal{P}_{n}^{\mathrm{BTL}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\}.$$
+__Thurstone__ model  
+Thurstone model is similar to BLT model, but using a different link function for probability:
+$$\mathcal{P}_{n}^{\text { Thu }}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\}.$$
+
 
 ## Iterative Ranking from Pair-wise Comparisons (Random Walk)
 
@@ -157,12 +164,12 @@ The BTL model gives us \(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}
 * A random walk on weighted graph $G=([n],E,A)$.  The weighted edge \(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\), \(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\) 
 
 <aside>
-Notice that here the weight is not the cost, but the probability of going from one vertex to another...
+Notice that here the weight is not the cost, but the probability of going from one vertex to another.
 </aside>
 
 A random walk \(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\).  By definition, the entries of a valid transition matrix are non-negative and $\sum_j P_{ij} =1$. Scale all edge weights by $1/d_{max}$, maximum out-degree. Add self-loop
 
-$$P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} & \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} & \text { if } i=j \end{aligned}\right.$$
+$$P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} &\quad \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} &\quad \text { if } i=j \end{aligned}\right.$$
 __Asymptotically__ (to say $k \rightarrow \infty$ ) $P$ would define a reversible Markov chain. \(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\) is a _unique_ stationary distribution. 
 Also in the ideal setting, $P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)$ is a _valid_ stationary distribution.
 

@@ -47,6 +47,7 @@
   <meta name="citation_reference" content="citation_title=When can we rank well from comparisons of o (n$\backslash$log (n)) non-actively chosen pairs?;citation_publication_date=2016;citation_author=Arun Rajkumar;citation_author=Shivani Agarwal"/>
   <meta name="citation_reference" content="citation_title=Accelerated spectral ranking;citation_publication_date=2018;citation_author=Arpit Agarwal;citation_author=Prathamesh Patil;citation_author=Shivani Agarwal"/>
   <meta name="citation_reference" content="citation_title=Stability and generalization of bipartite ranking algorithms;citation_publication_date=2005;citation_publisher=Springer;citation_author=Shivani Agarwal;citation_author=Partha Niyogi"/>
+  <meta name="citation_reference" content="citation_title=Stability and generalization;citation_publication_date=2002;citation_volume=2;citation_author=Olivier Bousquet;citation_author=André Elisseeff"/>
   <!--radix_placeholder_rmarkdown_metadata-->
 
 <script type="text/json" id="radix-rmarkdown-metadata">
@@ -1393,7 +1394,7 @@ As the objective above is step-function which is hard to minimize, similar using
 <aside>
 <div class="layout-chunk" data-layout="l-body">
 <div class="figure"><span id="fig:unnamed-chunk-4"></span>
-<img src="img/hingeloss.png" alt="The continuous function upper bounded 0-1 loss." width="310" />
+<img src="img/hingeloss.png" alt="The continuous function upper bounded 0-1 loss." width="310" data-distill-preview=1 />
 <p class="caption">
 Figure 4: The continuous function upper bounded 0-1 loss.
 </p>
@@ -1418,7 +1419,11 @@ Normalized Laplacian matrix<br />
 And this term is exactly <span class="math display">\[\mathcal{S}(f)=\mathbf{f}^{T} \mathbf{L} \mathbf{f}.\]</span><br />
 If consider <span class="math inline">\(\mathcal{F}\)</span> as column space of <span class="math inline">\(L^+\)</span>, it is easy to see tha <span class="math inline">\(\mathcal{F}\)</span> is an <a href="https://en.wikipedia.org/wiki/Reproducing_kernel_Hilbert_space">Reproducing kernel Hilbert space</a> (as <span class="math inline">\(L\)</span> is symmetric p.s.d.). We could rewrite this term as <span class="math inline">\(\mathcal{S}(f)=\|\mathbf{f}\|_{\mathcal{F}}^{2}\)</span>, which is an <span class="math inline">\(L2\)</span>-regularization in a given RKHS.</p>
 <h3 id="stability-bound-for-biparte-graph">Stability bound for biparte graph</h3>
-<p>This RKHS interpretation could lead to a stability bound for solutions of this optimization <span class="math display">\[\begin{aligned} R\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle}\right)&lt;&amp; \hat{R}_{\ell_{1}}\left(f_{\left\langle G, S_{+}, S_{-}\right\rangle} ; S_{+}, S_{-}\right) \\ &amp;+\frac{8 \kappa^{2}}{\lambda}\left(\frac{m_{1}+m_{2}}{m_{1} m_{2}}\right) \\ &amp;+\left(1+\frac{16 \kappa^{2}}{\lambda}\right) \sqrt{\frac{\left(m_{1}+m_{2}\right) \ln (1 / \delta)}{2 m_{1} m_{2}}} \end{aligned}\]</span> Formal proof can be found in <span class="citation" data-cites="agarwal2005stability">(Agarwal and Niyogi <a href="#ref-agarwal2005stability">2005</a>)</span>.</p>
+<p>This RKHS interpretation could lead to a stability bound for this algorithm with special case. This case considers the order graph <span class="math inline">\(\Gamma\)</span> as a “fully connected” biparte graph with two part <span class="math inline">\(S_+\)</span> and <span class="math inline">\(S_-\)</span>, where <span class="math inline">\(\forall v \in S_+\)</span> and <span class="math inline">\(\forall u \in S_-\)</span>, there is a directed edge <span class="math inline">\((v,u)\)</span>. Under this special case, the order data is not very different from having binary labels.<br />
+The formal statement could be found in <strong>Theorem 1</strong> <span class="citation" data-cites="agarwal2006ranking">(Agarwal <a href="#ref-agarwal2006ranking">2006</a>)</span> and the proof can be found in Theorem 3 and 4 from their previous work on biparte graph <span class="citation" data-cites="agarwal2005stability">(Agarwal and Niyogi <a href="#ref-agarwal2005stability">2005</a>)</span>.</p>
+<aside>
+By <strong>stability bound</strong>, here we mean the expected error are bounded by empirical error plus some terms for a stable algorithm. More details about this bound could be found in <span class="citation" data-cites="bousquet2002stability">(Bousquet and Elisseeff <a href="#ref-bousquet2002stability">2002</a>)</span>.
+</aside>
 <h2 id="classes-of-preference-matrices">Classes of Preference Matrices</h2>
 <p>After the simplest deterministic case, we now consider the probabilistic(noisy) setup. There are actually several common models that have been explored. The description is borrowed from <span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span>.</p>
 <h3 id="general-condition">General Condition</h3>
@@ -1467,6 +1472,9 @@ Remarks: …
 </div>
 <div id="ref-agarwal2005stability">
 <p>Agarwal, Shivani, and Partha Niyogi. 2005. “Stability and Generalization of Bipartite Ranking Algorithms.” In <em>International Conference on Computational Learning Theory</em>, 32–47. Springer. <a href="https://people.cs.uchicago.edu/~niyogi/papersps/AgaNiycolt.pdf">https://people.cs.uchicago.edu/~niyogi/papersps/AgaNiycolt.pdf</a>.</p>
+</div>
+<div id="ref-bousquet2002stability">
+<p>Bousquet, Olivier, and André Elisseeff. 2002. “Stability and Generalization.” <em>Journal of Machine Learning Research</em> 2 (Mar): 499–526. <a href="http://www.jmlr.org/papers/volume2/bousquet02a/bousquet02a.pdf">http://www.jmlr.org/papers/volume2/bousquet02a/bousquet02a.pdf</a>.</p>
 </div>
 <div id="ref-negahban2012iterative">
 <p>Negahban, Sahand, Sewoong Oh, and Devavrat Shah. 2012. “Iterative Ranking from Pair-Wise Comparisons.” In <em>Advances in Neural Information Processing Systems</em>, 2474–82. <a href="https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf">https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf</a>.</p>
@@ -1538,6 +1546,16 @@ Remarks: …
   pages={2474--2482},
   year={2012},
   url={https://papers.nips.cc/paper/4701-iterative-ranking-from-pair-wise-comparisons.pdf}
+}
+@article{bousquet2002stability,
+  title={Stability and generalization},
+  author={Bousquet, Olivier and Elisseeff, Andr{\'e}},
+  journal={Journal of machine learning research},
+  volume={2},
+  number={Mar},
+  pages={499--526},
+  year={2002},
+  url={http://www.jmlr.org/papers/volume2/bousquet02a/bousquet02a.pdf}
 }
 </script>
 <!--/radix_placeholder_appendices-->
