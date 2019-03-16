@@ -27,10 +27,6 @@ The problem is called __rank aggregation__, which consider this situation that g
 The problem could be formulated as the following: 
 given $n$ items $\{1,2,\dots,n \}$ to be compared and assume there is a latent preference matrix $P \in [0,1]^{n\times n}$. The entry $P_{i,j}$ in $P$ denote the probability item $x_i$ will beat item $x_j$. The probability could be $0$ or $1$ for deterministic/noiseless case and in $(0,1)$ if the observations are noisy. 
 
-```{r fig.cap="A matrix",fig.align="center",fig.width=4, fig.height=4,out.extra="class=external"}
-knitr::include_graphics('img/colormatrix.png')
-```
-
 To formulate this problem as a __reasonable__ and __solvable__ ranking problem, we require these two following constrains on matrix $P$:  
 1. For each pair of items $x_i$ and $x_j$, it is rather $x_i$ beats $x_j$ or $x_j$ beats $x_i$, thus $P_{ij} + P_{ji} =1$. (We will also consider $x_i$ ties $x_j$ in some special case.)  
 2. __Stochastic transitivity__(ST) condition (Directed Acyclic Graph): if $P_{ij} > \frac{1}{2}$ and $P_{jk} > \frac{1}{2}$, then $P_{ik} > \frac{1}{2}$. That is saying if there is an item $i$ ranked higher than $j$ and $j$ higher than $k$ with high probability, then $i$ should also beat $j$ with high probability. 
@@ -143,51 +139,53 @@ $$\mathcal{P}_{n}^{\text { Thu }}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exist
 ## Iterative Ranking from Pair-wise Comparisons (Random Walk)
 
 ### Introduction
-This algorithm has a natural random walk interpretation and model independent [@negahban2012iterative]
-Use BLT as demonstration, to show the performance is as well as MLE
-The key idea is to construct a random walk, it is likely to go from $v_i$ to $v_j$ if item $i$ and $j$ is compared, and the probability depends on how likely $i$ lost to $j$. 
+_Rank Centrality_ in [@negahban2012iterative] is an algorithm that uses the concept of random walk to solve this rank aggregation problem. The intuition is to construct a random walk that it is likely to go from $v_i$ to $v_j$ if item $i$ has rank lower than $j$. When it reaches a balance state(stationary distribution), the distribution will tend to be close to the ranking/weight of items. This idea is actually similar to Google's PageRank.
 
-So the global effect induced by transitivity is captured through the stationary distribution.(Network Centrality) PageRank, 
-Randomly chosen \(O(n\) poly \((\log n))\) pairs, notice that $\Omega(n  \log n )$ is necessary number of random comparison.
-
-<aside>
-due to connectivity threshold of random bipartite graph
-</aside>
-
-### Problem setup
-Consider $n$ items and a weight score $w_i \in \mathbb{R}_+$ for each item. In this setting, a pair of items are compared $k$ times in total, then denote the result by $Y^l_{ij}$ be $1$ if $j$ is prefered and $0$ otherwise $1 \leq l \leq k$.
-The BTL model gives us \(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\). 
+```{r fig.cap="PageRank, resource: https://en.wikipedia.org/wiki/File:PageRanks-Example.jpg" ,fig.align="center",fig.width=4, fig.height=4,out.extra="class=external"}
+knitr::include_graphics('img/PageRank.jpg')
+```
 
 ### Random walk approach
-
+For this problem, we use BLT model as a demonstration, but the algorithm itself is model independent.
+Consider $n$ items and a weight score $w_i \in \mathbb{R}_+$ for each item. In this setting, a pair of items are compared $k$ times in total, then denote the result by $Y^l_{ij}$ be $1$ if $j$ is prefered and $0$ otherwise $1 \leq l \leq k$. Then we define $2$ terms as follows: 
 * $a_{ij}$ the fraction of times $j$ prefered over $i$. \(a_{i j}=(1 / k) \sum_{l=1}^{k} Y_{i j}^{l}\)  
-* A random walk on weighted graph $G=([n],E,A)$.  The weighted edge \(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\), \(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\) 
+* $A_{i j}$ If the random walk is on a weighted graph $G=([n],E,A)$. The weighted edge \(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\), \(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\) 
+
+<!-- The BTL model gives us \(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\).  -->
 
 <aside>
-Notice that here the weight is not the cost, but the probability of going from one vertex to another.
+Notice that here the edge weight is not the cost, but the probability of going from one vertex to another.
 </aside>
 
-A random walk \(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\).  By definition, the entries of a valid transition matrix are non-negative and $\sum_j P_{ij} =1$. Scale all edge weights by $1/d_{max}$, maximum out-degree. Add self-loop
+In this random walk, the probability(edge weight) walks from item $i$ to item $j$ is \(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\).  By definition, the transition matrix should be row stochastic, i.e. $\sum_j P_{ij} =1$. Scale all edge weights by $1/d_{max}$ the maximum out-degree and add self-loop to those nodes with out-degree less than $d_{max}$:
 
 $$P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} &\quad \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} &\quad \text { if } i=j \end{aligned}\right.$$
-__Asymptotically__ (to say $k \rightarrow \infty$ ) $P$ would define a reversible Markov chain. \(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\) is a _unique_ stationary distribution. 
-Also in the ideal setting, $P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)$ is a _valid_ stationary distribution.
+To see the stationary distribution of this random walk is exactly the $\mathbf{w}$ we want:  
+__Asymptotically__ (to say $k \rightarrow \infty$ ) $P$ would define a reversible Markov chain, which is saying \(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\) is a _unique_ stationary distribution.   
+Also in the ideal setting, $P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)$ is a _valid_ stationary distribution. So this random walk constructed has a stationary distribution $\pi = \mathbf{w}$.
 
 ### Error Bound
-Each pair is chosen with probability $d/n$. Then there exists positive universal constatns $C,C',C''$ such that when $d\geq C(log n)^2$, and $k d \geq C b^5 log n $, the following bound on the error rate hold with probability at least $1-C''/n^3$:
+Each pair is chosen with probability $d/n$. Then there exists positive universal constatns $C,C',C''$ such that when $d\geq C(log n)^2$, and $k d \geq C b^5 \log n$, the following bound on the error rate hold with probability at least $1-C''/n^3$:
 $$\frac{\|\pi-\tilde{\pi}\|}{\|\tilde{\pi}\|} \leq C^{\prime} b^{3} \sqrt{\frac{\log n}{k d}},$$ 
-where \(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\) and \(b \equiv \max _{i, j} w_{i} / w_{j}\).
-
-<aside>
-Remarks: ...
-</aside>
+where \(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\) and \(b \equiv \max _{i, j} w_{i} / w_{j}\). More details could be found in __Theorem 1__[@negahban2012iterative].  
 
 ### Mixing time
-However, the mixing time is quite long due to the self-loop. [@agarwal2018accelerated]
+However, the mixing time is quite long due to the self-loop. Another recent paper [@agarwal2018accelerated] tries to address this problem by using a slightly different construction for the random walk. Instead of scaling all rows by the max out-degree, this algorithm scales different rows using the out-degree of corresponding node:
+$$P_{i j}^{acc}=\left\{\begin{aligned} \frac{1}{d_{i }} A_{i j} &\quad \text { if } i \neq j \\ 0 &\quad \text { if } i=j \end{aligned}\right.$$  
+The detailed balance equation then becomes
+$$w_{i} d_{i} P_{i j}^{acc}=w_{j} d_{j} P_{j i}^{acc},$$ then it is easy to see the stationary distribution of this random walk is $\pi^{acc} = \mathbf{D} \mathbf{w} /\|\mathbf{D} \mathbf{w}\|_{1}$, where $\mathbf{D}$ is the diagonal matrix where $\mathbf{D}_{ii}=d_i$.
+
+Intuitively we know the random walk with less self-loop should have a smaller mixing time. This statement could be proved rigourously by considering _spectral gap_ of the transition matrix (See __Lemma 1__ and __proposition 2__ in [@agarwal2018accelerated]).
 
 ## Low rank completion 
-In this paper[@rajkumar2016can], 
+In this paper[@rajkumar2016can], it introduces a new class of preference matrices, which is __Low rank__ matrix. The definition of this class of matrices is as follows: 
+_Let \(\psi :[0,1] \rightarrow \mathbb{R}\) be a link function and $r \in [n]$. Define the class of rank-$r$ preference matrices under $\psi$ as_
+$$\mathcal{P}_{n}^{\mathrm{LR}(\psi, r)}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \operatorname{rank}(\psi(\mathbf{P})) \leq r\right\}.$$ 
+It is mentioned in the paper that both BTL and Thurstone model are special cases of this more general class of preference matrices, thus this ranking problem could be reformulated as a low-rank completion problem.
 
+## Summary 
+The rank aggregation problem is a common model in real-life applications such as sports, recommendation systems, etc. In this article, my sight is limited to pairwise comparisons, while there is a more general setting that an item is compared to a subset of items. There are also abundent works on active choosing samples under this situation. 
+Some possible future works could be to have better bound or better sample complexity as well as to explore more posibiliies on active selecting samples.
 
 ## Acknowledgments {.appendix}
 

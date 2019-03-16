@@ -46,6 +46,7 @@
   <meta name="citation_reference" content="citation_title=When can we rank well from comparisons of o (n$\backslash$log (n)) non-actively chosen pairs?;citation_publication_date=2016;citation_author=Arun Rajkumar;citation_author=Shivani Agarwal"/>
   <meta name="citation_reference" content="citation_title=Accelerated spectral ranking;citation_publication_date=2018;citation_author=Arpit Agarwal;citation_author=Prathamesh Patil;citation_author=Shivani Agarwal"/>
   <meta name="citation_reference" content="citation_title=Stability and generalization of bipartite ranking algorithms;citation_publication_date=2005;citation_publisher=Springer;citation_author=Shivani Agarwal;citation_author=Partha Niyogi"/>
+  <meta name="citation_reference" content="citation_title=Iterative ranking from pair-wise comparisons;citation_publication_date=2012;citation_author=Sahand Negahban;citation_author=Sewoong Oh;citation_author=Devavrat Shah"/>
   <meta name="citation_reference" content="citation_title=Stability and generalization;citation_publication_date=2002;citation_volume=2;citation_author=Olivier Bousquet;citation_author=André Elisseeff"/>
   <!--radix_placeholder_rmarkdown_metadata-->
   
@@ -55,7 +56,7 @@
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["biblio.bib","img/01loss.png","img/colormatrix.png","img/cycle.png","img/hingeloss.png","ranking-from-comparisons_files/bowser-1.9.3/bowser.min.js","ranking-from-comparisons_files/distill-2.2.21/template.v2.js","ranking-from-comparisons_files/jquery-1.11.3/jquery.min.js","ranking-from-comparisons_files/webcomponents-2.0.0/webcomponents.js"]}
+  {"type":"character","attributes":{},"value":["biblio.bib","img/01loss.png","img/colormatrix.png","img/cycle.png","img/hingeloss.png","img/PageRank.jpg","ranking-from-comparisons_files/bowser-1.9.3/bowser.min.js","ranking-from-comparisons_files/distill-2.2.21/template.v2.js","ranking-from-comparisons_files/jquery-1.11.3/jquery.min.js","ranking-from-comparisons_files/webcomponents-2.0.0/webcomponents.js"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -984,12 +985,12 @@
 </ul></li>
 <li><a href="#iterative-ranking-from-pair-wise-comparisons-random-walk">Iterative Ranking from Pair-wise Comparisons (Random Walk)</a><ul>
 <li><a href="#introduction-1">Introduction</a></li>
-<li><a href="#problem-setup">Problem setup</a></li>
 <li><a href="#random-walk-approach">Random walk approach</a></li>
 <li><a href="#error-bound">Error Bound</a></li>
 <li><a href="#mixing-time">Mixing time</a></li>
 </ul></li>
 <li><a href="#low-rank-completion">Low rank completion</a></li>
+<li><a href="#summary">Summary</a></li>
 <li><a href="#acknowledgments">Acknowledgments</a></li>
 </ul>
 </nav>
@@ -998,23 +999,15 @@
 <h2 id="introduction">Introduction</h2>
 <p>The problem is called <strong>rank aggregation</strong>, which consider this situation that given the results of multiple pairwise comparisons of items, want to know the overall ranking of all items. The resulted overall ranking should match the pairwise comparisons to the largest extent.</p>
 <p>The problem could be formulated as the following: given <span class="math inline">\(n\)</span> items <span class="math inline">\(\{1,2,\dots,n \}\)</span> to be compared and assume there is a latent preference matrix <span class="math inline">\(P \in [0,1]^{n\times n}\)</span>. The entry <span class="math inline">\(P_{i,j}\)</span> in <span class="math inline">\(P\)</span> denote the probability item <span class="math inline">\(x_i\)</span> will beat item <span class="math inline">\(x_j\)</span>. The probability could be <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span> for deterministic/noiseless case and in <span class="math inline">\((0,1)\)</span> if the observations are noisy.</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-1"></span>
-<img src="img/colormatrix.png" alt="A matrix" width="316" class=external />
-<p class="caption">
-Figure 1: A matrix
-</p>
-</div>
-</div>
 <p>To formulate this problem as a <strong>reasonable</strong> and <strong>solvable</strong> ranking problem, we require these two following constrains on matrix <span class="math inline">\(P\)</span>:<br />
 1. For each pair of items <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span>, it is rather <span class="math inline">\(x_i\)</span> beats <span class="math inline">\(x_j\)</span> or <span class="math inline">\(x_j\)</span> beats <span class="math inline">\(x_i\)</span>, thus <span class="math inline">\(P_{ij} + P_{ji} =1\)</span>. (We will also consider <span class="math inline">\(x_i\)</span> ties <span class="math inline">\(x_j\)</span> in some special case.)<br />
 2. <strong>Stochastic transitivity</strong>(ST) condition (Directed Acyclic Graph): if <span class="math inline">\(P_{ij} &gt; \frac{1}{2}\)</span> and <span class="math inline">\(P_{jk} &gt; \frac{1}{2}\)</span>, then <span class="math inline">\(P_{ik} &gt; \frac{1}{2}\)</span>. That is saying if there is an item <span class="math inline">\(i\)</span> ranked higher than <span class="math inline">\(j\)</span> and <span class="math inline">\(j\)</span> higher than <span class="math inline">\(k\)</span> with high probability, then <span class="math inline">\(i\)</span> should also beat <span class="math inline">\(j\)</span> with high probability.</p>
 <aside>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<div class="figure"><span id="fig:unnamed-chunk-1"></span>
 <img src="img/cycle.png" alt="An invalid setting where i beats j, j beats k and k beats i" width="297" />
 <p class="caption">
-Figure 2: An invalid setting where i beats j, j beats k and k beats i
+Figure 1: An invalid setting where i beats j, j beats k and k beats i
 </p>
 </div>
 </div>
@@ -1031,10 +1024,10 @@ Figure 2: An invalid setting where i beats j, j beats k and k beats i
                         \end{cases}\]</span></p>
 <aside>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-3"></span>
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
 <img src="img/01loss.png" alt="The step function like loss function." width="320" />
 <p class="caption">
-Figure 3: The step function like loss function.
+Figure 2: The step function like loss function.
 </p>
 </div>
 </div>
@@ -1043,10 +1036,10 @@ Figure 3: The step function like loss function.
 As the objective above is step-function which is hard to minimize, similar using hinge loss as a surrogate of <span class="math inline">\((0,1)\)</span>-loss, we use <span class="math display">\[\ell_{h}\left(f ; v_{i}, v_{j}\right)=\left(1-\left(f\left(v_{i}\right)-f\left(v_{j}\right)\right)\right)_{+},\]</span></p>
 <aside>
 <div class="layout-chunk" data-layout="l-body">
-<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<div class="figure"><span id="fig:unnamed-chunk-3"></span>
 <img src="img/hingeloss.png" alt="The continuous function upper bounded 0-1 loss." width="310" data-distill-preview=1 />
 <p class="caption">
-Figure 4: The continuous function upper bounded 0-1 loss.
+Figure 3: The continuous function upper bounded 0-1 loss.
 </p>
 </div>
 </div>
@@ -1080,36 +1073,41 @@ By <strong>stability bound</strong>, here we mean the expected error are bounded
 <p>To summerize those conditions described informally in Introduction, all preferences matrices should be in this set <span class="math display">\[\mathcal{P}_{n}=\left\{\mathbf{P} \in[0,1]^{n \times n} | P_{i j}+P_{j i}=1 \forall i, j\right\}.\]</span> Those satisfy stochastic transitivity (ST) condition <span class="math display">\[\mathcal{P}_{n}^{\mathrm{ST}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | i&gt;\mathbf{p} j, j&gt;_{\mathbf{P}} k \Longrightarrow i&gt;_{\mathbf{P}} k\right\}.\]</span> Deterministic ordering (DO) model in part 2 have preferences matrices <span class="math display">\[\mathcal{P}_{n}^{\mathrm{DO}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n} : \sigma(i)&lt;\sigma(j) \Longrightarrow P_{i j}=1\right\}.\]</span></p>
 <h3 id="undeterministic-models">Undeterministic models</h3>
 <p><strong>Noisy permutation</strong> model <span class="math display">\[\mathcal{P}_{n}^{\mathrm{NP}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \sigma \in \mathcal{S}_{n}, p \in\left[0, \frac{1}{2}\right) : \sigma(i)&lt;\sigma(j) \Longrightarrow P_{i j}=1-p\right\}\]</span> <span class="math display">\[\mathcal{P}_{n}^{\mathrm{DO}} \subseteq \mathcal{P}_{n}^{\mathrm{NP}} \subseteq \mathcal{P}_{n}^{\mathrm{ST}}\]</span><br />
-<strong>BTL</strong> model <span class="math display">\[\begin{aligned} \mathcal{P}_{n}^{\mathrm{BTL}} &amp;=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\} \\ \mathcal{P}_{n}^{\mathrm{Thu}} &amp;=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\} \end{aligned}\]</span> <strong>Thurstone</strong> model is similar to <strong>BTL</strong> model</p>
+<strong>Bradley-Terry-Luce</strong> model<br />
+For BTL model, there is a scoring/ranking <span class="math inline">\(w_i\)</span> for each item <span class="math inline">\(i\)</span>, and <span class="math display">\[\mathcal{P}_{n}^{\mathrm{BTL}}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{w} \in \mathbb{R}_{++}^{n} : P_{i j}=\frac{w_{i}}{w_{i}+w_{j}} \forall i, j\right\}.\]</span> <strong>Thurstone</strong> model<br />
+Thurstone model is similar to BLT model, but using a different link function for probability: <span class="math display">\[\mathcal{P}_{n}^{\text { Thu }}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \exists \mathbf{s} \in \mathbb{R}^{n} : P_{i j}=\Phi\left(s_{i}-s_{j}\right) \forall i, j\right\}.\]</span></p>
 <h2 id="iterative-ranking-from-pair-wise-comparisons-random-walk">Iterative Ranking from Pair-wise Comparisons (Random Walk)</h2>
 <h3 id="introduction-1">Introduction</h3>
-<p>This algorithm has a natural random walk interpretation and model independent <span class="citation" data-cites="negahban2012iterative">(Negahban, Oh, and Shah <a href="#ref-negahban2012iterative">2012</a>)</span> Use BLT as demonstration, to show the performance is as well as MLE The key idea is to construct a random walk, it is likely to go from <span class="math inline">\(v_i\)</span> to <span class="math inline">\(v_j\)</span> if item <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> is compared, and the probability depends on how likely <span class="math inline">\(i\)</span> lost to <span class="math inline">\(j\)</span>.</p>
-<p>So the global effect induced by transitivity is captured through the stationary distribution.(Network Centrality) PageRank, Randomly chosen <span class="math inline">\(O(n\)</span> poly <span class="math inline">\((\log n))\)</span> pairs, notice that <span class="math inline">\(\Omega(n \log n )\)</span> is necessary number of random comparison.</p>
-<aside>
-due to connectivity threshold of random bipartite graph
-</aside>
-<h3 id="problem-setup">Problem setup</h3>
-<p>Consider <span class="math inline">\(n\)</span> items and a weight score <span class="math inline">\(w_i \in \mathbb{R}_+\)</span> for each item. In this setting, a pair of items are compared <span class="math inline">\(k\)</span> times in total, then denote the result by <span class="math inline">\(Y^l_{ij}\)</span> be <span class="math inline">\(1\)</span> if <span class="math inline">\(j\)</span> is prefered and <span class="math inline">\(0\)</span> otherwise <span class="math inline">\(1 \leq l \leq k\)</span>. The BTL model gives us <span class="math inline">\(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\)</span>.</p>
+<p><em>Rank Centrality</em> in <span class="citation" data-cites="negahban2012iterative">(Negahban, Oh, and Shah <a href="#ref-negahban2012iterative">2012</a>)</span> is an algorithm that uses the concept of random walk to solve this rank aggregation problem. The intuition is to construct a random walk that it is likely to go from <span class="math inline">\(v_i\)</span> to <span class="math inline">\(v_j\)</span> if item <span class="math inline">\(i\)</span> has rank lower than <span class="math inline">\(j\)</span>. When it reaches a balance state(stationary distribution), the distribution will tend to be close to the ranking/weight of items. This idea is actually similar to Google’s PageRank.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-4"></span>
+<img src="img/PageRank.jpg" alt="PageRank, resource: https://en.wikipedia.org/wiki/File:PageRanks-Example.jpg" class=external />
+<p class="caption">
+Figure 4: PageRank, resource: <a href="https://en.wikipedia.org/wiki/File:PageRanks-Example.jpg" class="uri">https://en.wikipedia.org/wiki/File:PageRanks-Example.jpg</a>
+</p>
+</div>
+</div>
 <h3 id="random-walk-approach">Random walk approach</h3>
-<ul>
-<li><span class="math inline">\(a_{ij}\)</span> the fraction of times <span class="math inline">\(j\)</span> prefered over <span class="math inline">\(i\)</span>. <span class="math inline">\(a_{i j}=(1 / k) \sum_{l=1}^{k} Y_{i j}^{l}\)</span><br />
-</li>
-<li>A random walk on weighted graph <span class="math inline">\(G=([n],E,A)\)</span>. The weighted edge <span class="math inline">\(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\)</span>, <span class="math inline">\(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\)</span></li>
-</ul>
+<p>For this problem, we use BLT model as a demonstration, but the algorithm itself is model independent. Consider <span class="math inline">\(n\)</span> items and a weight score <span class="math inline">\(w_i \in \mathbb{R}_+\)</span> for each item. In this setting, a pair of items are compared <span class="math inline">\(k\)</span> times in total, then denote the result by <span class="math inline">\(Y^l_{ij}\)</span> be <span class="math inline">\(1\)</span> if <span class="math inline">\(j\)</span> is prefered and <span class="math inline">\(0\)</span> otherwise <span class="math inline">\(1 \leq l \leq k\)</span>. Then we define <span class="math inline">\(2\)</span> terms as follows: * <span class="math inline">\(a_{ij}\)</span> the fraction of times <span class="math inline">\(j\)</span> prefered over <span class="math inline">\(i\)</span>. <span class="math inline">\(a_{i j}=(1 / k) \sum_{l=1}^{k} Y_{i j}^{l}\)</span><br />
+* <span class="math inline">\(A_{i j}\)</span> If the random walk is on a weighted graph <span class="math inline">\(G=([n],E,A)\)</span>. The weighted edge <span class="math inline">\(A_{i j}=a_{i j} /\left(a_{i j}+a_{j i}\right)\)</span>, <span class="math inline">\(A_{j i}=a_{j i} /\left(a_{i j}+a_{j i}\right)\)</span></p>
+<!-- The BTL model gives us \(\mathbb{P}\left(Y_{i j}^{l}=1\right)=\frac{w_{j}}{w_{i}+w_{j}}\).  -->
 <aside>
-Notice that here the weight is not the cost, but the probability of going from one vertex to another…
+Notice that here the edge weight is not the cost, but the probability of going from one vertex to another.
 </aside>
-<p>A random walk <span class="math inline">\(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\)</span>. By definition, the entries of a valid transition matrix are non-negative and <span class="math inline">\(\sum_j P_{ij} =1\)</span>. Scale all edge weights by <span class="math inline">\(1/d_{max}\)</span>, maximum out-degree. Add self-loop</p>
-<p><span class="math display">\[P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} &amp; \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} &amp; \text { if } i=j \end{aligned}\right.\]</span> <strong>Asymptotically</strong> (to say <span class="math inline">\(k \rightarrow \infty\)</span> ) <span class="math inline">\(P\)</span> would define a reversible Markov chain. <span class="math inline">\(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\)</span> is a <em>unique</em> stationary distribution. Also in the ideal setting, <span class="math inline">\(P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)\)</span> is a <em>valid</em> stationary distribution.</p>
+<p>In this random walk, the probability(edge weight) walks from item <span class="math inline">\(i\)</span> to item <span class="math inline">\(j\)</span> is <span class="math inline">\(P_{ij}=\mathbb{P}\left(X_{t+1}=j | X_{t}=i\right)\)</span>. By definition, the transition matrix should be row stochastic, i.e. <span class="math inline">\(\sum_j P_{ij} =1\)</span>. Scale all edge weights by <span class="math inline">\(1/d_{max}\)</span> the maximum out-degree and add self-loop to those nodes with out-degree less than <span class="math inline">\(d_{max}\)</span>:</p>
+<p><span class="math display">\[P_{i j}=\left\{\begin{aligned} \frac{1}{d_{\max }} A_{i j} &amp;\quad \text { if } i \neq j \\ 1-\frac{1}{d_{\max }} \sum_{k \neq i} A_{i k} &amp;\quad \text { if } i=j \end{aligned}\right.\]</span> To see the stationary distribution of this random walk is exactly the <span class="math inline">\(\mathbf{w}\)</span> we want:<br />
+<strong>Asymptotically</strong> (to say <span class="math inline">\(k \rightarrow \infty\)</span> ) <span class="math inline">\(P\)</span> would define a reversible Markov chain, which is saying <span class="math inline">\(\pi_{i}=v_{i} /\left(\sum_{j} v_{j}\right)\)</span> is a <em>unique</em> stationary distribution.<br />
+Also in the ideal setting, <span class="math inline">\(P_{ij}=\tilde{P}_{ij}=\left(1 / d_{\max }\right) w_{j} /\left(w_{i}+w_{j}\right)\)</span> is a <em>valid</em> stationary distribution. So this random walk constructed has a stationary distribution <span class="math inline">\(\pi = \mathbf{w}\)</span>.</p>
 <h3 id="error-bound">Error Bound</h3>
-<p>Each pair is chosen with probability <span class="math inline">\(d/n\)</span>. Then there exists positive universal constatns <span class="math inline">\(C,C&#39;,C&#39;&#39;\)</span> such that when <span class="math inline">\(d\geq C(log n)^2\)</span>, and $k d C b^5 log n $, the following bound on the error rate hold with probability at least <span class="math inline">\(1-C&#39;&#39;/n^3\)</span>: <span class="math display">\[\frac{\|\pi-\tilde{\pi}\|}{\|\tilde{\pi}\|} \leq C^{\prime} b^{3} \sqrt{\frac{\log n}{k d}},\]</span> where <span class="math inline">\(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\)</span> and <span class="math inline">\(b \equiv \max _{i, j} w_{i} / w_{j}\)</span>.</p>
-<aside>
-Remarks: …
-</aside>
+<p>Each pair is chosen with probability <span class="math inline">\(d/n\)</span>. Then there exists positive universal constatns <span class="math inline">\(C,C&#39;,C&#39;&#39;\)</span> such that when <span class="math inline">\(d\geq C(log n)^2\)</span>, and <span class="math inline">\(k d \geq C b^5 \log n\)</span>, the following bound on the error rate hold with probability at least <span class="math inline">\(1-C&#39;&#39;/n^3\)</span>: <span class="math display">\[\frac{\|\pi-\tilde{\pi}\|}{\|\tilde{\pi}\|} \leq C^{\prime} b^{3} \sqrt{\frac{\log n}{k d}},\]</span> where <span class="math inline">\(\tilde{\pi}(i)=w_{i} / \sum_{\ell} w_{\ell}\)</span> and <span class="math inline">\(b \equiv \max _{i, j} w_{i} / w_{j}\)</span>. More details could be found in <strong>Theorem 1</strong><span class="citation" data-cites="negahban2012iterative">(Negahban, Oh, and Shah <a href="#ref-negahban2012iterative">2012</a>)</span>.</p>
 <h3 id="mixing-time">Mixing time</h3>
-<p>However, the mixing time is quite long due to the self-loop. <span class="citation" data-cites="agarwal2018accelerated">(Agarwal, Patil, and Agarwal <a href="#ref-agarwal2018accelerated">2018</a>)</span></p>
+<p>However, the mixing time is quite long due to the self-loop. Another recent paper <span class="citation" data-cites="agarwal2018accelerated">(Agarwal, Patil, and Agarwal <a href="#ref-agarwal2018accelerated">2018</a>)</span> tries to address this problem by using a slightly different construction for the random walk. Instead of scaling all rows by the max out-degree, this algorithm scales different rows using the out-degree of corresponding node: <span class="math display">\[P_{i j}^{acc}=\left\{\begin{aligned} \frac{1}{d_{i }} A_{i j} &amp;\quad \text { if } i \neq j \\ 0 &amp;\quad \text { if } i=j \end{aligned}\right.\]</span><br />
+The detailed balance equation then becomes <span class="math display">\[w_{i} d_{i} P_{i j}^{acc}=w_{j} d_{j} P_{j i}^{acc},\]</span> then it is easy to see the stationary distribution of this random walk is <span class="math inline">\(\pi^{acc} = \mathbf{D} \mathbf{w} /\|\mathbf{D} \mathbf{w}\|_{1}\)</span>, where <span class="math inline">\(\mathbf{D}\)</span> is the diagonal matrix where <span class="math inline">\(\mathbf{D}_{ii}=d_i\)</span>.</p>
+<p>Intuitively we know the random walk with less self-loop should have a smaller mixing time. This statement could be proved rigourously by considering <em>spectral gap</em> of the transition matrix (See <strong>Lemma 1</strong> and <strong>proposition 2</strong> in <span class="citation" data-cites="agarwal2018accelerated">(Agarwal, Patil, and Agarwal <a href="#ref-agarwal2018accelerated">2018</a>)</span>).</p>
 <h2 id="low-rank-completion">Low rank completion</h2>
-<p>In this paper<span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span>,</p>
+<p>In this paper<span class="citation" data-cites="rajkumar2016can">(Rajkumar and Agarwal <a href="#ref-rajkumar2016can">2016</a>)</span>, it introduces a new class of preference matrices, which is <strong>Low rank</strong> matrix. The definition of this class of matrices is as follows: <em>Let <span class="math inline">\(\psi :[0,1] \rightarrow \mathbb{R}\)</span> be a link function and <span class="math inline">\(r \in [n]\)</span>. Define the class of rank-<span class="math inline">\(r\)</span> preference matrices under <span class="math inline">\(\psi\)</span> as</em> <span class="math display">\[\mathcal{P}_{n}^{\mathrm{LR}(\psi, r)}=\left\{\mathbf{P} \in \mathcal{P}_{n} | \operatorname{rank}(\psi(\mathbf{P})) \leq r\right\}.\]</span> It is mentioned in the paper that both BTL and Thurstone model are special cases of this more general class of preference matrices, thus this ranking problem could be reformulated as a low-rank completion problem.</p>
+<h2 id="summary">Summary</h2>
+<p>The rank aggregation problem is a common model in real-life applications such as sports, recommendation systems, etc. In this article, my sight is limited to pairwise comparisons, while there is a more general setting that an item is compared to a subset of items. There are also abundent works on active choosing samples under this situation. Some possible future works could be to have better bound or better sample complexity as well as to explore more posibiliies on active selecting samples.</p>
 <h2 id="acknowledgments" class="appendix">Acknowledgments</h2>
 <p>Distill is a publication format for scientific and technical writing, native to the web.</p>
 <p>Learn more about using Distill at <a href="https://rstudio.github.io/distill" class="uri">https://rstudio.github.io/distill</a>.</p>
