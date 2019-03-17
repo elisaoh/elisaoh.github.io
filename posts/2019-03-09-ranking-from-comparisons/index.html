@@ -1345,7 +1345,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 </nav>
 <hr class="d-toc-separator"/>
-<p>This post will give a neither detailed nor comprehensive review on the problem of reconstructing ranking from pairwise comparisons.</p>
 <h2 id="introduction">Introduction</h2>
 <p>The problem is called <strong>rank aggregation</strong>, which consider this situation that given the results of multiple pairwise comparisons of items, want to know the overall ranking of all items. The resulted overall ranking should match the pairwise comparisons to the largest extent.</p>
 <p>The problem could be formulated as the following: given <span class="math inline">\(n\)</span> items <span class="math inline">\(\{1,2,\dots,n \}\)</span> to be compared and assume there is a latent preference matrix <span class="math inline">\(P \in [0,1]^{n\times n}\)</span>. The entry <span class="math inline">\(P_{i,j}\)</span> in <span class="math inline">\(P\)</span> denote the probability item <span class="math inline">\(x_i\)</span> will beat item <span class="math inline">\(x_j\)</span>. The probability could be <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span> for deterministic/noiseless case and in <span class="math inline">\((0,1)\)</span> if the observations are noisy.</p>

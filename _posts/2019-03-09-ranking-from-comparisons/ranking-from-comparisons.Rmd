@@ -18,7 +18,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
-This post will give a neither detailed nor comprehensive review on the problem of reconstructing ranking from pairwise comparisons. 
+
 
 ## Introduction
 
