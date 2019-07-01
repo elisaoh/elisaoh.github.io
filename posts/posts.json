@@ -1,5 +1,22 @@
 [
   {
+    "path": "posts/2019-06-28-gan-for-text-generation/",
+    "title": "GAN for text generation",
+    "description": "A brief overview of several text generation models using GAN.",
+    "author": [
+      {
+        "name": "Elisa Ou",
+        "url": "https://elisaoh.github.io"
+      }
+    ],
+    "date": "2019-06-28",
+    "categories": [
+      "NLP"
+    ],
+    "preview": {},
+    "last_modified": "2019-06-28T16:01:18-05:00"
+  },
+  {
     "path": "posts/2019-03-15-mixture-regression/",
     "title": "Mixture Regression",
     "description": "A short description of the post.",
@@ -40,8 +57,10 @@
       }
     ],
     "date": "2019-03-09",
-    "categories": [],
-    "preview": "posts/2019-03-09-ranking-from-comparisons/img/hingeloss.png",
-    "last_modified": "2019-03-17T14:04:14-05:00"
+    "categories": [
+      "Statistics"
+    ],
+    "preview": "posts/2019-03-09-ranking-from-comparisons/img/cycle.png",
+    "last_modified": "2019-06-28T15:47:37-05:00"
   }
 ]

@@ -1,0 +1,62 @@
+---
+title: "GAN for text generation"
+description: |
+  A brief overview of several text generation models using GAN.
+author:
+  - name: Elisa Ou
+    url: https://elisaoh.github.io
+date: 06-28-2019
+categories:
+  - NLP
+output:
+  distill::distill_article:
+    self_contained: false
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## SeqGAN
+### Introduction
+In SeqGAN[@yu2017seqgan], the paper aims at a broder problem, "generating sequence of discrete tokens". __Policy Gradient__, __Reinforcement Learning__, [@SeqGAN]
+The reward of the generating policy (given current state, what is the next token)
+SeqGAN is defined as the loss of discriminator
+$$Q_{D_{\phi}}^{G_{\theta}}\left(a=y_{T}, s=Y_{1 : T-1}\right)=D_{\phi}\left(Y_{1 : T}\right).$$
+
+As the discriminator could only give us the probability of a finished full senquence, Monte Carlo search is introduced to estimate the reward of an intermedia state with roll-out function $G_\beta$ the same as the generating function $G_\theta$. 
+$$ Q_{D_{\phi}}^{G_{\theta}}\left(s=Y_{1 : t-1}, a=y_{t}\right)=\left\{\begin{array}{ll}{\frac{1}{N} \sum_{n=1 \atop D_{\phi}}^{N} D_{\phi}\left(Y_{1 : T}^{n}\right), Y_{1 : T}^{n} \in \mathrm{MC}^{G_{\beta}}\left(Y_{1 : t} ; N\right)} & {\text { for } t<T} \\ {D_{\phi}\left(Y_{1 : t}\right)} & {\text { for } t=T}\end{array}\right. $$
+
+### Model description
+1. Generator: both as generator and roll-out function for Monte Carlo Searching.
+2. Discriminator: Standard CNN
+
+### Training procedure 
+1. Pretrain Generator using MLE over training samples.
+2. Pretrain Discriminator using generated synthetic sequences.
+3. Train generator: generate sequence and calculate policy gradient (fill remaining tokens using Monte Carlo search to obtain expected reward); update generator
+4. Train discriminator: discriminate generated sequence and real sequence
+
+### Oracle NLL
+
+A randomly initialized LSTM as the true model
+$$\mathrm{NLL}_{\text { oracle }}=-\mathbb{E}_{Y_{1 : T} \sim G_{\theta}}\left[\sum_{t=1}^{T} \log G_{\text { oracle }}\left(y_{t} | Y_{1 : t-1}\right)\right]$$.
+
+
+## 
+
+
+
+## TextGAN
+### Introduction
+
+
+## Acknowledgments {.appendix}
+
+Distill is a publication format for scientific and technical writing, native to the web.
+
+Learn more about using Distill at <https://rstudio.github.io/distill>.
+

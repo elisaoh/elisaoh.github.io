@@ -2,12 +2,15 @@
 title: "Ranking from Comparisons"
 description: |
   A brief write-up on rank aggregation from pairwise comparisons.
+preview: img/cycle.png
 author:
   - name: Elisa Ou
     url: https://elisaoh.github.io
     affiliation: Department of ECE, UW-Madison
 date: 03-09-2019
 bibliography: biblio.bib
+categories:
+  - Statistics
 output:
   distill::distill_article:
     self_contained: false
